@@ -448,7 +448,7 @@
 
             const data = await response.json();
 
-            const ticketLink = `https://ticket-bad1.onrender.com/api/ticket/${data.token}/`;
+            const ticketLink = `https://devobichinaka.github.io/dinner/ticket_detail.html?token=${data.token}/`;
             const qrImageUrl = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(ticketLink)}`;
 
             document.getElementById("qr-img").src = qrImageUrl;
