@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Welcome - ADUN Dinner Night</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --gold: #d4af37;
+      --dark-gold: #b08d26;
+      --cream: #f8f5f0;
+      --dark-bg: #121212;
+      --dark-card: #1a1a1a;
+      --light-gray: #e0e0e0;
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Montserrat', sans-serif;
+      background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+      color: var(--cream);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      position: relative;
+      overflow-x: hidden;
+    }
+    
+    body::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><rect width="100" height="100" fill="none" stroke="rgba(212, 175, 55, 0.1)" stroke-width="1"/></svg>');
+      opacity: 0.3;
+      z-index: -1;
+    }
+    
+    .ticket-container {
+      background: rgba(26, 26, 26, 0.85);
+      backdrop-filter: blur(10px);
+      border-radius: 20px;
+      width: 100%;
+      max-width: 500px;
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+      border: 1px solid rgba(212, 175, 55, 0.2);
+      position: relative;
+      overflow: hidden;
+      margin: 20px;
+    }
+    
+    .ticket-container::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 5px;
+      background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    }
+    
+    .ticket-header {
+      text-align: center;
+      padding: 40px 30px 30px;
+      position: relative;
+    }
+    
+    .event-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 2.5rem;
+      color: var(--gold);
+      margin-bottom: 10px;
+      text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    }
+    
+    .event-subtitle {
+      font-size: 1.1rem;
+      opacity: 0.9;
+      margin-bottom: 25px;
+      font-weight: 300;
+      line-height: 1.6;
+    }
+    
+    .ticket-icon {
+      width: 80px;
+      height: 80px;
+      background: linear-gradient(135deg, var(--gold), var(--dark-gold));
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 20px;
+      box-shadow: 0 0 20px rgba(212, 175, 55, 0.5);
+      border: 2px solid var(--cream);
+    }
+    
+    .ticket-icon i {
+      font-size: 36px;
+      color: var(--cream);
+    }
+    
+    .loading {
+      text-align: center;
+      padding: 40px 30px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    
+    .spinner {
+      width: 50px;
+      height: 50px;
+      border: 5px solid rgba(212, 175, 55, 0.2);
+      border-top: 5px solid var(--gold);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin-bottom: 20px;
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
+    .loading-text {
+      font-size: 1.2rem;
+      color: var(--cream);
+      margin-bottom: 10px;
+    }
+    
+    .ticket-info {
+      padding: 0 30px 40px;
+      display: none;
+    }
+    
+    .ticket-details {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 15px;
+      padding: 25px;
+      margin-bottom: 30px;
+      border-left: 3px solid var(--gold);
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    }
+    
+    .detail-row {
+      display: flex;
+      margin-bottom: 15px;
+      padding-bottom: 15px;
+      border-bottom: 1px dashed rgba(255, 255, 255, 0.1);
+    }
+    
+    .detail-row:last-child {
+      margin-bottom: 0;
+      padding-bottom: 0;
+      border-bottom: none;
+    }
+    
+    .detail-label {
+      font-weight: 600;
+      color: var(--gold);
+      width: 120px;
+      flex-shrink: 0;
+    }
+    
+    .detail-value {
+      flex-grow: 1;
+      text-align: right;
+      font-weight: 500;
+    }
+    
+    .status-badge {
+      background: rgba(212, 175, 55, 0.2);
+      color: var(--gold);
+      padding: 8px 15px;
+      border-radius: 30px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .status-badge i {
+      font-size: 0.9rem;
+    }
+    
+    .credits-section {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 15px;
+      padding: 25px;
+      text-align: center;
+      border-top: 2px solid rgba(212, 175, 55, 0.3);
+    }
+    
+    .credits-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.4rem;
+      color: var(--gold);
+      margin-bottom: 20px;
+    }
+    
+    .credit-list {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+    
+    .credit-item {
+      background: rgba(212, 175, 55, 0.15);
+      padding: 8px 15px;
+      border-radius: 30px;
+      font-size: 0.9rem;
+      font-weight: 500;
+      transition: all 0.3s ease;
+    }
+    
+    .credit-item:hover {
+      background: rgba(212, 175, 55, 0.25);
+      transform: translateY(-2px);
+    }
+    
+    .footer {
+      text-align: center;
+      padding: 20px 30px 10px;
+      font-size: 0.9rem;
+      opacity: 0.7;
+      width: 100%;
+    }
+    
+    .error-message {
+      color: #e74c3c;
+      font-weight: 500;
+      text-align: center;
+      padding: 30px;
+      display: none;
+    }
+    
+    .error-message i {
+      font-size: 2rem;
+      margin-bottom: 15px;
+      display: block;
+    }
+    
+    @media (max-width: 480px) {
+      .ticket-container {
+        margin: 10px;
+      }
+      
+      .event-title {
+        font-size: 2rem;
+      }
+      
+      .detail-row {
+        flex-direction: column;
+        gap: 5px;
+      }
+      
+      .detail-label, .detail-value {
+        width: 100%;
+        text-align: left;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="ticket-container">
+    <div class="ticket-header">
+      <div class="ticket-icon">
+        <i class="fas fa-ticket-alt"></i>
+      </div>
+      <h1 class="event-title">ADUN Dinner & Awards Night</h1>
+      <p class="event-subtitle">Your exclusive invitation to an evening of celebration and recognition</p>
+    </div>
+    
+    <div class="loading" id="loading">
+      <div class="spinner"></div>
+      <p class="loading-text">Fetching your ticket information...</p>
+      <p class="loading-text">Please wait while we verify your details</p>
+    </div>
+    
+    <div class="error-message" id="error-message">
+      <i class="fas fa-exclamation-circle"></i>
+      <p id="error-text"></p>
+    </div>
+    
+    <div class="ticket-info" id="ticket-info">
+      <div class="ticket-details">
+        <div class="detail-row">
+          <span class="detail-label">Ticket ID</span>
+          <span class="detail-value" id="ticketId"></span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">Full Name</span>
+          <span class="detail-value" id="fullName"></span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">Matric Number</span>
+          <span class="detail-value" id="matricNo"></span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">Status</span>
+          <span class="detail-value">
+            <span class="status-badge" id="verifyStatus"><i class="fas fa-check-circle"></i>Loading...</span>
+          </span>
+        </div>
+      </div>
+      
+      <div class="credits-section">
+        <h3 class="credits-title">Proudly Brought To You By</h3>
+        <div class="credit-list">
+          <span class="credit-item">Spinero</span>
+          <span class="credit-item">Edward</span>
+          <span class="credit-item">Mizzy</span>
+          <span class="credit-item">Iveren</span>
+          <span class="credit-item">Adun TV</span>
+          <span class="credit-item">Obinna</span>
+        </div>
+        <p class="event-subtitle">With special thanks to our sponsors and partners</p>
+      </div>
+    </div>
+    
+    <div class="footer">
+      <p>ADUN Annual Dinner & Awards Night 2025 | Exclusive Event</p>
+      <p>For assistance, contact: chiderachinaka06@gmail.com | +234 706 240 1459</p>
+    </div>
+  </div>
+
+  <script>
+    function getTokenFromQuery() {
+      const params = new URLSearchParams(window.location.search);
+      return params.get("token");
+    }
+
+    async function loadTicket() {
+      const token = getTokenFromQuery();
+      const loadingDiv = document.getElementById("loading");
+      const infoDiv = document.getElementById("ticket-info");
+      const errorDiv = document.getElementById("error-message");
+      const errorText = document.getElementById("error-text");
+
+      if (!token) {
+        loadingDiv.style.display = "none";
+        errorDiv.style.display = "block";
+        errorText.textContent = "Invalid or missing ticket token. Please check your invitation link.";
+        return;
+      }
+
+      try {
+        
+        
+        // In a real application, this would be the fetch call:
+        
+        const response = await fetch(`http://10.136.22.34:8000/api/tickets/${token}/`);
+        if (!response.ok) throw new Error("Ticket not found");
+        const data = await response.json();
+        
+        
+        
+        document.getElementById("ticketId").textContent = data.ticket_id;
+        document.getElementById("fullName").textContent = data.full_name;
+        document.getElementById("matricNo").textContent = data.matric_no;
+        
+        const verifyStatusEl = document.getElementById("verifyStatus");
+          if (data.is_verified) {
+            verifyStatusEl.innerHTML = `<i class="fas fa-check-circle"></i> Verified`;
+            verifyStatusEl.style.background = "rgba(46, 204, 113, 0.2)";
+            verifyStatusEl.style.color = "#2ecc71";
+          } else {
+            verifyStatusEl.innerHTML = `<i class="fas fa-times-circle"></i> Unverified`;
+            verifyStatusEl.style.background = "rgba(231, 76, 60, 0.2)";
+            verifyStatusEl.style.color = "#e74c3c";
+          }
+        loadingDiv.style.display = "none";
+        infoDiv.style.display = "block";
+        
+        // Add subtle entrance animation
+        infoDiv.style.animation = "fadeIn 0.6s ease forwards";
+        document.head.insertAdjacentHTML('beforeend', `
+          <style>
+            @keyframes fadeIn {
+              from { opacity: 0; transform: translateY(20px); }
+              to { opacity: 1; transform: translateY(0); }
+            }
+          </style>
+        `);
+        
+      } catch (err) {
+        loadingDiv.style.display = "none";
+        errorDiv.style.display = "block";
+        errorText.textContent = `Error: ${err.message}. Please contact our support team.`;
+      }
+    }
+
+    // Initialize on page load
+    document.addEventListener('DOMContentLoaded', loadTicket);
+  </script>
+</body>
+</html>

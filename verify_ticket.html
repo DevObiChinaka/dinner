@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Ticket Verification</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: #f9fafb;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .card {
+      background: #ffffff;
+      padding: 30px 40px;
+      border-radius: 16px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      max-width: 400px;
+      width: 90%;
+      text-align: center;
+    }
+
+    h1 {
+      font-size: 24px;
+      margin-bottom: 10px;
+      color: #111827;
+    }
+
+    p {
+      font-size: 16px;
+      color: #4b5563;
+    }
+
+    .status {
+      font-size: 18px;
+      margin-top: 20px;
+      font-weight: 600;
+    }
+
+    .success {
+      color: #16a34a;
+    }
+
+    .info {
+      color: #f59e0b;
+    }
+
+    .error {
+      color: #dc2626;
+    }
+
+    button {
+      margin-top: 20px;
+      padding: 10px 18px;
+      font-size: 16px;
+      font-weight: 500;
+      border: none;
+      border-radius: 8px;
+      background-color: #3b82f6;
+      color: white;
+      cursor: pointer;
+      transition: background-color 0.2s ease-in-out;
+    }
+
+    button:hover {
+      background-color: #2563eb;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>Ticket Verification</h1>
+    <p id="details">Checking ticket status...</p>
+    <div id="status" class="status"></div>
+    <button id="verifyBtn" style="display: none;">Verify Ticket</button>
+  </div>
+
+  <script>
+    const token = window.location.pathname.split("/").filter(Boolean).pop();
+    const statusElem = document.getElementById("status");
+    const detailsElem = document.getElementById("details");
+    const verifyBtn = document.getElementById("verifyBtn");
+
+    async function fetchTicket() {
+      const now = new Date().getTime(); // cache buster
+      const response = await fetch(`http://10.136.22.34:8000/api/tickets/${token}/?t=${now}`, {
+        headers: { 'Cache-Control': 'no-cache' }
+      });
+
+      if (!response.ok) throw new Error("Ticket not found.");
+
+      return await response.json();
+    }
+
+    async function verifyTicket() {
+      try {
+        const response = await fetch(`http://10.136.22.34:8000/api/tickets/${token}/verify/`, {
+          method: "POST",
+          headers: { 'Cache-Control': 'no-cache' }
+        });
+
+        if (!response.ok) throw new Error("Failed to verify ticket.");
+
+        statusElem.textContent = "🎉 Ticket successfully verified!";
+        statusElem.className = "status info";
+        verifyBtn.style.display = "none";
+
+        // Refresh to reflect updated verification status
+        await loadTicketStatus();
+      } catch (err) {
+        statusElem.textContent = "❌ " + err.message;
+        statusElem.className = "status error";
+      }
+    }
+
+    async function loadTicketStatus() {
+      try {
+        const ticket = await fetchTicket();
+        detailsElem.textContent = `${ticket.full_name} (Matric No: ${ticket.matric_no})`;
+
+        if (ticket.is_verified) {
+          statusElem.textContent = "✅ Ticket is already verified.";
+          statusElem.className = "status success";
+          verifyBtn.style.display = "none";
+        } else {
+          statusElem.textContent = "❌ Ticket is not yet verified.";
+          statusElem.className = "status error";
+          verifyBtn.style.display = "inline-block";
+        }
+      } catch (err) {
+        detailsElem.textContent = "Verification failed.";
+        statusElem.textContent = "❌ " + err.message;
+        statusElem.className = "status error";
+      }
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      loadTicketStatus();
+      verifyBtn.onclick = verifyTicket;
+    });
+  </script>
+</body>
+</html>
