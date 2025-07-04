@@ -426,15 +426,15 @@
       <div class="ticket-details">
         <div class="detail-row">
           <span class="detail-label">Ticket ID</span>
-          <span class="detail-value" id="ticketId">1234567890</span>
+          <span class="detail-value" id="ticketId">Loading...</span>
         </div>
         <div class="detail-row">
           <span class="detail-label">Full Name</span>
-          <span class="detail-value" id="fullName">Chinaka Chidera Wisdom Obinna</span>
+          <span class="detail-value" id="fullName">Loading...</span>
         </div>
         <div class="detail-row">
           <span class="detail-label">Matric Number</span>
-          <span class="detail-value" id="matricNo">ADUN/FS/SEN/22/015</span>
+          <span class="detail-value" id="matricNo">Loading...</span>
         </div>
         <div class="detail-row">
           <span class="detail-label">Status</span>
@@ -494,7 +494,7 @@
         const data = await response.json();
         
         // Populate ticket data
-        document.getElementById("ticketId").textContent = data.token;
+        document.getElementById("ticketId").textContent = data.id;
         document.getElementById("fullName").textContent = data.full_name;
         document.getElementById("matricNo").textContent = data.matric_no;
         
