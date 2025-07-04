@@ -447,7 +447,7 @@
         // If ticket is not verified, verify it
         let verificationResponse = null;
         if (!ticketData.is_verified) {
-          verificationResponse = await fetch(`https://ticket-bad1.onrender.com/api/tickets/${token}/verify/`, {
+          verificationResponse = await fetch(`https://ticket-bad1.onrender.com/api/tickets/verify/${token}`, {
             method: "POST"
           });
           
