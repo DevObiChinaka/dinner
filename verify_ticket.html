@@ -436,7 +436,7 @@
       
       try {
         // First, check ticket status
-        const statusResponse = await fetch(`https://ticket-bad1.onrender.com/api/tickets/${token}/`);
+        const statusResponse = await fetch(`https://ticket-bad1.onrender.com/api/tickets/${token}`);
         
         if (!statusResponse.ok) {
           throw new Error("Ticket not found");
